@@ -5,11 +5,15 @@ class Piece {
     this.y = 0;
     this.x = Math.floor(COLS / 2);
   }
-  //   [0, 7, 0],
-  //   [7, 7, 7],
-  //   [0, 0, 0],
 
   renderPiece() {
-    this.shape.map();
+    this.shape.map((row, i) => {
+      row.map((cell, j) => {
+        if (cell > 0) {
+          this.ctx.fillStyle = COLORS[cell];
+          this.ctx.fillRect(this.x + j, this.y + i, 1, 1);
+        }
+      });
+    });
   }
 }

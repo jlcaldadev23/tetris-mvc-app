@@ -5,6 +5,7 @@ const COLS = 10;
 const SCORE_WORTH = 10;
 
 const SHAPES = [
+  [],
   [
     [0, 0, 0, 0],
     [1, 1, 1, 1],
@@ -43,11 +44,12 @@ const SHAPES = [
 ];
 
 const COLORS = [
-  '#FFFFFF',
+  '#000000',
+  '#FF0000',
+  '#00FF00',
+  '#0000FF',
   '#FFFF00',
-  '#FFFF00',
-  '#FF2200',
-  '#FFFF11',
-  '#FF5600',
-  '#FF1411',
+  '#00FFFF',
+  '#10FF01',
+  '#F000FF',
 ];

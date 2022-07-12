@@ -1,104 +1,60 @@
-//UNDERSTANDING 'THIS' IN JS
+//setup
 
-const roads = [
-  "Alice's House - Bob's House",
-  "Alice's House - Cabin",
-  "Alice's House - Post Office",
-  "Bob's House - Town Hall",
-  "Darla's House - Ernie's House",
-  "Darla's House - Town Hall",
-  "Ernie's House - Grete's House",
-  "Grete's House - Farm",
-  "Grete's Houseb - Shop",
-  'Marketplace - Farm',
-  'Marketplace - Post Office',
-  'Marketplace - Shop',
-  'Marketplace - Town Hall',
-  'Shop - Town Hall',
-];
+let canvas = document.getElementById('game-canvas');
+let scoreboard = document.getElementById('scoreboard');
+let ctx = canvas.getContext('2d');
+ctx.scale(BLOCK_SIDE_LENGTH, BLOCK_SIDE_LENGTH);
+let model = new GameModel(ctx);
 
-function buildGraph(edges) {
-  let graph = Object.create(null);
-  function addEdge(from, to) {
-    if (graph[from] == null) {
-      graph[from] = [to]; //adding key of 'from' location and adding array of destination
-    } else {
-      graph[from].push(to); //adding destination from arr
-    }
+let score = 0;
+
+setInterval(() => {
+  newGameState();
+}, GAME_CLOCK);
+
+let newGameState = () => {
+  fullSend();
+  if (model.fallingPiece === null) {
+    const rand = Math.round(Math.random() * 6) + 1;
+    const newPiece = new Piece(SHAPES[rand], ctx);
+    model.fallingPiece = newPiece;
+    model.moveDown();
+  } else {
+    model.moveDown();
   }
-  const routes = edges.map((edge) => edge.split(' - '));
-  //saving place to array of 2d arr(from, to)
-  for (let [from, to] of routes) {
-    addEdge(from, to);
-    addEdge(to, from);
-  }
-  return graph;
-}
-
-const roadGraph = buildGraph(roads); //object with key of place and value of array of destination
-
-class VillageState {
-  constructor(place, parcels) {
-    this.place = place;
-    this.parcels = parcels;
-  }
-
-  move(destination) {
-    if (!roadGraph[this.place].includes(destination)) {//if 'from place' does not include the 
-      return this;
-    } else {
-      let parcels = this.parcels
-        .map((p) => {
-          if (p.place != this.place) return p;
-          return { place: destination, address: p.address };
-        })
-        .filter((p) => p.place != p.address);
-      return new VillageState(destination, parcels);
-    }
-  }
-}
-
-let first = new VillageState('Post Office', [
-  { place: 'Post Office', address: "Alice's House" },
-]);
-
-let next = first.move('Shop');
-
-// let object = Object.freeze({ value: 5 }); //????
-
-function runRobot(state, robot, memory) {
-  for (let turn = 0; ; turn++) {
-    if (state.parcels.length == 0) {
-      console.log(`Done in ${turn} turns`);
-      break;
-    }
-    let action = robot(state, memory);
-    state = state.move(action.direction);
-    memory = action.memory;
-    console.log(`Moved to ${action.direction}`);
-  }
-}
-
-function randomPick(array) {
-  let choice = Math.floor(Math.random() * array.length);
-  return array[choice];
-}
-
-function randomRobot(state) {
-  return { direction: randomPick(roadGraph[state.place]) };
-}
-
-VillageState.random = function (parcelCount = 5) {
-  let parcels = [];
-  for (let i = 0; i < parcelCount; i++) {
-    let address = randomPick(Object.keys(roadGraph));
-    let place;
-    do {
-      place = randomPick(Object.keys(roadGraph));
-    } while (place == address);
-    parcels.push({ place, address });
-  }
-  return new VillageState('Post Office', parcels);
 };
 
-runRobot(VillageState.random(), randomRobot);
+const fullSend = () => {
+  const allFilled = (row) => {
+    for (let x of row) {
+      if (x === 0) {
+        return false;
+      }
+    }
+    return true;
+  };
+  for (let i = 0; i < model.grid.length; i++) {
+    if (allFilled(model.grid[i])) {
+      score += SCORE_WORTH;
+      model.grid.splice(i, 1);
+      model.grid.unshift([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+    }
+  }
+  scoreboard.innerHTML = 'Score: ' + String(score);
+};
+
+document.addEventListener('keydown', (e) => {
+  e.preventDefault();
+  switch (e.key) {
+    case 'w':
+      model.rotate();
+      break;
+    case 'd':
+      model.move(true);
+      break;
+    case 's':
+      model.moveDown();
+    case 'a':
+      model.move(false);
+  }
+});
