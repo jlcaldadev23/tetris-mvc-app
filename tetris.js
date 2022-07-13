@@ -1,4 +1,4 @@
-//setup
+// setup
 
 let canvas = document.getElementById('game-canvas');
 let scoreboard = document.getElementById('scoreboard');
@@ -33,6 +33,7 @@ const fullSend = () => {
     }
     return true;
   };
+
   for (let i = 0; i < model.grid.length; i++) {
     if (allFilled(model.grid[i])) {
       score += SCORE_WORTH;
@@ -40,6 +41,7 @@ const fullSend = () => {
       model.grid.unshift([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
     }
   }
+
   scoreboard.innerHTML = 'Score: ' + String(score);
 };
 
@@ -54,7 +56,9 @@ document.addEventListener('keydown', (e) => {
       break;
     case 's':
       model.moveDown();
+      break;
     case 'a':
       model.move(false);
+      break;
   }
 });

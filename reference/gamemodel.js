@@ -1,15 +1,15 @@
 class GameModel {
   constructor(ctx) {
     this.ctx = ctx;
-    this.fallingPiece = null;
+    this.fallingPiece = null; // piece
     this.grid = this.makeStartingGrid();
   }
 
   makeStartingGrid() {
     let grid = [];
-    for (let i = 0; i < ROWS; i++) {
-      grid.push([]); //
-      for (let j = 0; j < COLS; j++) {
+    for (var i = 0; i < ROWS; i++) {
+      grid.push([]);
+      for (var j = 0; j < COLS; j++) {
         grid[grid.length - 1].push(0);
       }
     }
@@ -21,13 +21,12 @@ class GameModel {
     const n = shape.length;
     for (let i = 0; i < n; i++) {
       for (let j = 0; j < n; j++) {
-        //part of the shape
         if (shape[i][j] > 0) {
-          let p = x + j; //
+          let p = x + j;
           let q = y + i;
           if (p >= 0 && p < COLS && q < ROWS) {
-            //in bounds
-            if (this.grid[p][q] > 0) {
+            // in bounds
+            if (this.grid[q][p] > 0) {
               return true;
             }
           } else {
@@ -65,13 +64,14 @@ class GameModel {
           let p = x + j;
           let q = y + i;
           if (p >= 0 && p < COLS && q < ROWS && cell > 0) {
-            this.grid[p][q] = shape[i][j];
+            this.grid[q][p] = shape[i][j];
           }
         });
       });
-      //check game over
+
+      // check game over
       if (this.fallingPiece.y === 0) {
-        alert('Game over');
+        alert('Game over!');
         this.grid = this.makeStartingGrid();
       }
       this.fallingPiece = null;
@@ -85,14 +85,16 @@ class GameModel {
     if (this.fallingPiece === null) {
       return;
     }
+
     let x = this.fallingPiece.x;
     let y = this.fallingPiece.y;
     if (right) {
+      // move right
       if (!this.collision(x + 1, y)) {
         this.fallingPiece.x += 1;
       }
     } else {
-      //move left
+      // move left
       if (!this.collision(x - 1, y)) {
         this.fallingPiece.x -= 1;
       }
